@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+    <style>
+        .map {
+            height: 100vh;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="map pt-3 pb-3 mb-4" id="map">
+
+    </section>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY"></script>
+
+    <!-- <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" /> -->
+    <script>
+        // example data 
+        // let array = [
+        //     { "lat": 28.7041, "lng": 77.1025, "address": "Dilhi address", "mobile": "123456789", "operator": "dilhi operator name", "status": 1 },
+        //     { "lat": 12.9716, "lng": 77.5946, "address": "bangulur address", "mobile": "1234567489", "operator": "bangulur opp name", "status": 1 },
+        //     { "lat": 19.0760, "lng": 72.8777, "address": "Mumbai address", "mobile": "988654321", "operator": "mumbai opp name", "status": 1 },
+        //     { "lat": 22.5726, "lng": 88.3639, "address": "kolkata address", "mobile": "113131311", "operator": "kolkarta opp name", "status": 0 },
+        //     { "lat": 13.0827, "lng": 80.2707, "address": "chanai address", "mobile": "1234565465", "operator": "chanai opp name", "status": 0 },
+        // ]
+        $.ajax({
+            type: 'GET',
+            url: "http://localhost:3000",
+            withCredentials: true,
+            headers: {
+                'Access-Control-Allow-Origin': 'http://localhost:3000/'
+            },
+            success: function (data) {
+                let array = data.data;
+                let map;
+        function initMap() {
+            const mapOptions = {
+                zoom: 5,
+                center: { lat: 28.7041, lng: 77.1025 },
+            };
+            map = new google.maps.Map(document.getElementById("map"), mapOptions);
+            var markers = new Array();
+            for (i = 0; i < array.length; i++) {
+                var marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(array[i].lat, array[i].lng),
+                    map: map,
+                    draggable: false,
+                    icon: array[i].status ? "./google-maps.png" : "./location-pin.png"
+                });
+
+                var infowindow = new google.maps.InfoWindow();
+
+                google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                    return function () {
+                        var contentString = `<div class="map-box-hover">
+                                            Latitude: ${array[i].lat} <br/>
+                                            Longtitude: ${array[i].lng} <br/>
+                                            Address: ${array[i].address} <br/>
+                                            Mobile: ${array[i].mobile} <br/>
+                                            Operator Name: ${array[i].operator} <br/>
+                                        </div>`;
+                        infowindow.setContent(contentString);
+
+                        infowindow.open(map, marker);
+                    }
+                })(marker, i));
+            }
+        }
+        initMap();
+            },
+            error: function (error) {
+                console.log("error", error);
+            }
+        });
+    </script>
+</body>
+
+</html>
